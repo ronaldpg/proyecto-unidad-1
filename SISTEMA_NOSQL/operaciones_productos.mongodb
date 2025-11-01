@@ -1,0 +1,166 @@
+// Usar base de datos techstore_inventory
+use("techstore_inventory");
+
+// borrar la coleccion de productos si existe
+try { db.products.drop(); } catch(e) {}
+
+// Crear colección con JSON Schema donde se incluyen validaciones de subdocumentos y arrays
+db.createCollection("products", {
+  validator: {
+    $jsonSchema: {
+      bsonType: "object",
+      required: ["sku", "nombre", "precio_unitario", "stock", "tipo_producto"],
+      additionalProperties: true,
+      properties: {
+        sku: {
+          bsonType: "string",
+          description: "en formato string único que identifica el producto"
+        },
+        nombre: {
+          bsonType: "string",
+          description: "en formato string con el nombre del producto"
+        },
+        precio_unitario: {
+          bsonType: ["double","int","decimal"],
+          minimum: 0,
+          description: "en formato numérico, precio por unidad (>=0)"
+        },
+        stock: {
+          bsonType: "int",
+          minimum: 0,
+          description: "en formato entero, stock disponible (>=0)"
+        },
+        tipo_producto: {
+          bsonType: "string",
+          description: "en formato string con el tipo de producto"
+        },
+        fecha_creacion: {
+          bsonType: "date",
+          description: "en formato fecha, fecha de creación/registro"
+        },
+        especificaciones: {
+          bsonType: "object",
+          description: "en formato subdocumento con especificaciones técnicas",
+          properties: {
+            // algunos campos comunes para varios tipos de productos
+            pantalla: { bsonType: "string" },
+            ram_gb: { bsonType: "int", minimum: 0 },
+            almacenamiento_gb: { bsonType: "int", minimum: 0 },
+            cpu: { bsonType: "string" },
+            ssd_gb: { bsonType: "int", minimum: 0 },
+            camara_mp: { bsonType: "int", minimum: 0 },
+            bateria_mah: { bsonType: "int", minimum: 0 },
+            dimensiones_cm: {
+              bsonType: "object",
+              properties: {
+                alto: { bsonType: ["double","int"] },
+                ancho: { bsonType: ["double","int"] },
+                fondo: { bsonType: ["double","int"] }
+              }
+            }
+          },
+          additionalProperties: true
+        },
+        variantes: {
+          // se inicializa el array de variantes como vacío si no hay variantes
+          bsonType: "array",
+          description: "Variantes del producto (opcional)",
+          minItems: 0,
+          items: {
+            bsonType: "object",
+            required: ["sku_variante"],
+            properties: {
+              sku_variante: { bsonType: "string" },
+              nombre_variante: { bsonType: "string" },
+              stock: { bsonType: "int", minimum: 0 },
+              precio_delta: { bsonType: ["double","int","decimal"] } // aqui se diferencia el precio respecto al producto base
+            },
+            additionalProperties: false
+          }
+        },
+        tags: {
+          bsonType: "array",
+          items: { bsonType: "string" },
+          uniqueItems: true
+        }
+      }
+    }
+  },
+  validationLevel: "moderate",
+  validationAction: "error"
+});
+
+// estos son los indices de los campos más consultados
+db.products.createIndex({ sku: 1 }, { unique: true });
+db.products.createIndex({ tipo_producto: 1 });
+db.products.createIndex({ "especificaciones.ram_gb": 1 });
+
+// algunas inserciones validas de ejemplo
+db.products.insertMany([
+  {
+    sku: "RJ-SM-0001",
+    nombre: "Redmagic 5g",
+    precio_unitario: NumberDecimal("767.89"),
+    stock: 14,
+    tipo_producto: "Smartphone",
+    fecha_creacion: new Date(),
+    especificaciones: {
+      pantalla: "7.8\"",
+      ram_gb: 12,
+      almacenamiento_gb: 512,
+      camara_mp:48,
+      bateria_mah: 5600
+    },
+    variantes: [
+      { sku_variante: "RJ-SM-0001-N", nombre_variante: "Rosa", stock: 27, precio_delta: 0 },
+      { sku_variante: "RJ-SM-0001-W", nombre_variante: "Gris", stock: 13, precio_delta: 0 }
+    ],
+    tags: ["smartphone", "android"]
+  },
+  {
+    sku: "RJ-LAP-0001",
+    nombre: "Asus tuff Gaming F15",
+    precio_unitario: NumberDecimal("1534.67"),
+    stock: 15,
+    tipo_producto: "Laptop",
+    fecha_creacion: new Date(),
+    especificaciones: {
+      cpu: "Intel Core i9",
+      ram_gb: 32,
+      ssd_gb: 2500,
+      dimensiones_cm: { alto: 3.2, ancho: 41.2, fondo: 33.56 },
+      peso_kg: 5.6
+    },
+    tags: ["laptop", "ultrabook"]
+  },
+  {
+    sku: "RJ-MON-0001",
+    nombre: "Monitor 27\" FHD",
+    precio_unitario: NumberDecimal("250.31"),
+    stock: 24,
+    tipo_producto: "Monitor",
+    fecha_creacion: new Date(),
+    especificaciones: {
+      tamano_pulgadas: 27,
+      resolucion: "2560x1440",
+      tipo_panel: "AMOLED"
+    },
+    tags: ["monitor", "display"]
+  }
+]);
+
+// ejemplo de una inserción inválida que viola varias reglas del JSON Schema y el índice único
+db.products.insertOne({
+  sku: "TS-SMP-0001", // ducplicado -> falla índice único
+  nombre: 123,        // formato erroneo -> falla JSON Schema
+  precio_unitario: -5, // formato erroneo -> falla JSON Schema
+  stock: -1,
+  tipo_producto: "Smartphone"
+});
+
+// ejemplos de consultas y mostrar resultados
+print("Total productos:", db.products.countDocuments());
+printjson(db.products.find({}, { _id:0, sku:1, nombre:1, precio_unitario:1, stock:1, tipo_producto:1 }).toArray());
+
+// Mostrar índices
+printjson(db.products.getIndexes());
