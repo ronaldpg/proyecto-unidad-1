@@ -62,25 +62,25 @@ Resumen general de calidad de datos:
 
 
 # 4.1 Creacion database nosql
-![Creacion database nosql](imagenes/NOSQL_CREACION_DATABASE.png)
+![Creacion database nosql](Imagenes/NOSQL_CREACION_DATABASE.png)
 
 # 4.2 Creacion de la coleccion
-![Creacion de la coleccion](imagenes/NOSQL_CREACION_COLECCION.png)
+![Creacion de la coleccion](Imagenes/NOSQL_CREACION_COLECCION.png)
 
 # 4.3 Insercion de datos validos
-![Insercion de datos validos](imagenes/NOSQL_INSERSION_DATOS.png)
+![Insercion de datos validos](Imagenes/NOSQL_INSERSION_DATOS.png)
 
 # 4.4 Insercion de datos invalidos
-![Insercion de datos invalidos](imagenes/NOSQL_INSERSION_DATOS_INVALIDOS.png)
+![Insercion de datos invalidos](Imagenes/NOSQL_INSERSION_DATOS_INVALIDOS.png)
 
 # 4.5 Creacion de los index
-![Creacion de los index](imagenes/NOSQL_CREACION_INDEX.png)
+![Creacion de los index](Imagenes/NOSQL_CREACION_INDEX.png)
 
 # 4.6 Consulta de los productos
-![Consulta de productos](imagenes/NOSQL_CONSULTA_PRODUCTOS_TOTALES.png)
+![Consulta de productos](Imagenes/NOSQL_CONSULTA_PRODUCTOS_TOTALES.png)
 
 # 4.7 Consulta de los indices
-![Consulta de indices](imagenes/NOSQL_MOSTRAR_INDICES.png)
+![Consulta de indices](Imagenes/NOSQL_MOSTRAR_INDICES.png)
 
 # 4.8 Diagrama de entidad relacion
 ![Entidad relacion](SISTEMA_SQL/modelo_relacional.png)
