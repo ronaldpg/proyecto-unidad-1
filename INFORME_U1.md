@@ -82,10 +82,8 @@ Resumen general de calidad de datos:
 # 4.7 Consulta de los indices
 ![Consulta de indices](imagenes/NOSQL_MOSTRAR_INDICES.png)
 
-
-
-
-
+# 4.8 Diagrama de entidad relacion
+![Entidad relacion](SISTEMA_SQL/modelo_relacional.png)
 
 ## 5. Conclusiones
 
